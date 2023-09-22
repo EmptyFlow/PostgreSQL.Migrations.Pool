@@ -24,7 +24,7 @@ CREATE TABLE user(
     email text NOT NULL
 );
 CREATE TABLE reservednumber(
-    number SERIAL PRIMARY KEY,
+    number int4 UNIQUE PRIMARY KEY,
     userid int4 NOT NULL,
     comment text NOT NULL,
     FOREIGN KEY (userid) REFERENCES user(id),

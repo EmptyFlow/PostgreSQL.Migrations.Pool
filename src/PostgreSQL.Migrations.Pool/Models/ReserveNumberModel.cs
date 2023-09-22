@@ -5,7 +5,7 @@
     /// </summary>
     public record ReserveNumberModel {
 
-        public int MigrationNumber { get; init; }
+        public int? MigrationNumber { get; init; }
 
         public string Comment { get; init; } = "";
 
