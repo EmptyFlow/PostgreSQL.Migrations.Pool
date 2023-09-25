@@ -33,7 +33,7 @@ namespace PostgreSQL.Migrations.Pool.Storage {
         /// <typeparam name="T">Type of return model.</typeparam>
         /// <param name="query">Query.</param>
         /// <returns>Collection of items.</returns>
-        public Task<T> GetSingleAsync<T> ( Query query ) where T : new();
+        public Task<T?> GetSingleAsync<T> ( Query query ) where T : new();
 
         /// <summary>
         /// Get items from database.

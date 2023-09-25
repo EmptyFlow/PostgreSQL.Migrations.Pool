@@ -381,7 +381,7 @@ namespace PostgreSQL.Migrations.Pool.Storage {
             return ExecuteWithResultAsCollection<T> ( compiledQuery.Sql, compiledQuery.NamedBindings );
         }
 
-        public async Task<T> GetSingleAsync<T> ( Query query ) where T : new() {
+        public async Task<T?> GetSingleAsync<T> ( Query query ) where T : new() {
             var result = await GetAsync<T> ( query.Limit ( 1 ) );
             return result.FirstOrDefault ();
         }
