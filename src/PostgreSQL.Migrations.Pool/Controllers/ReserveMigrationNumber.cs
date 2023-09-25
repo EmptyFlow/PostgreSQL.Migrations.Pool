@@ -4,6 +4,7 @@ using PostgreSQL.Migrations.Pool.Entities;
 using PostgreSQL.Migrations.Pool.Models;
 using PostgreSQL.Migrations.Pool.Services;
 using PostgreSQL.Migrations.Pool.Storage;
+using SqlKata;
 
 namespace PostgreSQL.Migrations.Pool.Controllers {
 
@@ -44,6 +45,17 @@ namespace PostgreSQL.Migrations.Pool.Controllers {
 
                     await m_storageContext.AddOrUpdate ( reserverNumber );
                 }
+            );
+        }
+
+        [HttpDelete ( "cancelreservation" )]
+        public Task CancelReservation ( [FromQuery, RequiredParameter] int migrationNumber ) {
+            if ( migrationNumber < 1 ) throw new ArgumentOutOfRangeException ( nameof ( migrationNumber ) );
+
+            return m_storageContext.MakeNoResult<ReservedNumber> (
+                new Query ()
+                    .Where ( "number", migrationNumber )
+                    .AsDelete ()
             );
         }
 

@@ -367,7 +367,10 @@ namespace PostgreSQL.Migrations.Pool.Storage {
         public async Task<IEnumerable<T>> GetAsync<T> ( Query query ) where T : new() {
             if ( query == null ) throw new ArgumentNullException ( nameof ( query ) );
 
-            var compiledQuery = m_compilerWithoutBraces.Compile ( query );
+            GetTableName<T> ( out string? tableName );
+            var queryResult = query.From ( tableName );
+
+            var compiledQuery = m_compilerWithoutBraces.Compile ( queryResult );
             return await ExecuteWithResultAsCollectionAsync<T> ( compiledQuery.Sql, compiledQuery.NamedBindings );
         }
 
