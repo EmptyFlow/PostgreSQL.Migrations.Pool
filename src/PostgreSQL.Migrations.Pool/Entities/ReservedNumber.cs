@@ -1,9 +1,12 @@
 ﻿
+using PostgreSQL.Migrations.Pool.Attributes;
+
 namespace PostgreSQL.Migrations.Pool.Entities {
 
     /// <summary>
     /// Reserved number.
     /// </summary>
+    [TableName( "reservednumber" )]
     public class ReservedNumber {
 
         /// <summary>

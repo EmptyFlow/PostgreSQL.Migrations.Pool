@@ -44,7 +44,7 @@ namespace PostgreSQL.Migrations.Pool.Storage {
 
         private readonly IConfigurationService m_configurationService;
 
-        public StorageContext ( ILogger<StorageContext> logger, IConfigurationService configurationService) {
+        public StorageContext ( ILogger<StorageContext> logger, IConfigurationService configurationService ) {
             m_logger = logger;
             m_configurationService = configurationService ?? throw new ArgumentNullException ( nameof ( configurationService ) );
             m_connectionString = m_configurationService.DatabaseConnectionString ();
@@ -131,6 +131,16 @@ namespace PostgreSQL.Migrations.Pool.Storage {
                 .Where ( a => a is TableNameAttribute )
                 .OfType<TableNameAttribute> ()
                 .FirstOrDefault () ?? throw new ArgumentNullException ( $"The element {item.GetType ().Name} does not have a TableName attribute. Please add an attribute to understand which table name to use." );
+            tableName = tableNameAttibute.TableName;
+        }
+
+        private static void GetTableName<T> ( out string tableName ) {
+            var itemType = typeof ( T );
+            var tableNameAttibute = itemType
+                .GetCustomAttributes ( false )
+                .Where ( a => a is TableNameAttribute )
+                .OfType<TableNameAttribute> ()
+                .FirstOrDefault () ?? throw new ArgumentNullException ( $"The element {itemType.Name} does not have a TableName attribute. Please add an attribute to understand which table name to use." );
             tableName = tableNameAttibute.TableName;
         }
 
@@ -368,6 +378,21 @@ namespace PostgreSQL.Migrations.Pool.Storage {
             return ExecuteWithResultAsCollection<T> ( compiledQuery.Sql, compiledQuery.NamedBindings );
         }
 
+        public async Task<T> GetSingleAsync<T> ( Query query ) where T : new() {
+            var result = await GetAsync<T> ( query.Limit ( 1 ) );
+            return result.FirstOrDefault ();
+        }
+
+        public Task MakeNoResult<T> ( Query query ) where T : new() {
+            if ( query == null ) throw new ArgumentNullException ( nameof ( query ) );
+
+            GetTableName<T> ( out string? tableName );
+            var queryResult = query.From ( tableName );
+
+            var compiledQuery = m_compilerWithoutBraces.Compile ( queryResult );
+            return ExecuteNonResult ( compiledQuery.Sql, compiledQuery.NamedBindings );
+        }
+
         public async Task MakeInTransaction ( Func<Task> action ) {
             await BeginTransaction ( groupedTransaction: true );
 
@@ -377,4 +402,5 @@ namespace PostgreSQL.Migrations.Pool.Storage {
         }
 
     }
+
 }
