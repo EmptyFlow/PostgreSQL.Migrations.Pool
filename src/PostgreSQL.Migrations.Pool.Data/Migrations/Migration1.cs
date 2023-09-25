@@ -16,7 +16,7 @@ DROP TABLE user;
 
         public override string Up () {
             return """
-CREATE TABLE user(
+CREATE TABLE pooluser(
     id SERIAL PRIMARY KEY,
     name text NOT NULL,
     displayName text NOT NULL,
@@ -27,8 +27,7 @@ CREATE TABLE reservednumber(
     number int4 UNIQUE PRIMARY KEY,
     userid int4 NOT NULL,
     comment text NOT NULL,
-    FOREIGN KEY (userid) REFERENCES user(id),
-    ADD CONSTRAINT fk_reservednumber_user FOREIGN KEY (userid) REFERENCES user(id)
+    CONSTRAINT fk_reservednumber_user FOREIGN KEY (userid) REFERENCES pooluser(id)
 );
 """;
         }

@@ -17,6 +17,11 @@ namespace PostgreSQL.Migrations.Pool.Entities {
         public int UserId { get; set; }
 
         /// <summary>
+        /// Release identifier.
+        /// </summary>
+        public int ReleaseId { get; set; }
+
+        /// <summary>
         /// Comment.
         /// </summary>
         public string Comment { get; set; } = "";

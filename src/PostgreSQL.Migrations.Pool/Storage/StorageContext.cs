@@ -6,6 +6,7 @@ using System.Data;
 using System.Reflection;
 using System.Text.Json;
 using PostgreSQL.Migrations.Pool.Attributes;
+using PostgreSQL.Migrations.Pool.Services;
 
 namespace PostgreSQL.Migrations.Pool.Storage {
 
@@ -41,12 +42,12 @@ namespace PostgreSQL.Migrations.Pool.Storage {
 
         private readonly ILogger<StorageContext> m_logger;
 
-        /*private readonly IConfigurationService m_configurationService;*/
+        private readonly IConfigurationService m_configurationService;
 
-        public StorageContext ( ILogger<StorageContext> logger/*, IConfigurationService configurationService */) {
+        public StorageContext ( ILogger<StorageContext> logger, IConfigurationService configurationService) {
             m_logger = logger;
-            //m_configurationService = configurationService ?? throw new ArgumentNullException ( nameof ( configurationService ) );
-            //m_connectionString = m_configurationService.DatabaseConnectionString ();
+            m_configurationService = configurationService ?? throw new ArgumentNullException ( nameof ( configurationService ) );
+            m_connectionString = m_configurationService.DatabaseConnectionString ();
         }
 
         private static async Task OpenConnection ( NpgsqlConnection connection ) {

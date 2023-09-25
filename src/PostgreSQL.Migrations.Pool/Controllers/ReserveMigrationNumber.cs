@@ -2,8 +2,8 @@
 using PostgreSQL.Migrations.Pool.Attributes;
 using PostgreSQL.Migrations.Pool.Entities;
 using PostgreSQL.Migrations.Pool.Models;
+using PostgreSQL.Migrations.Pool.Services;
 using PostgreSQL.Migrations.Pool.Storage;
-using SqlKata;
 
 namespace PostgreSQL.Migrations.Pool.Controllers {
 
@@ -15,7 +15,12 @@ namespace PostgreSQL.Migrations.Pool.Controllers {
 
         private readonly IStorageContext m_storageContext;
 
-        public ReserveMigrationNumber ( IStorageContext storageContext ) => m_storageContext = storageContext;
+        private readonly IReserveNumberService m_reserveNumberService;
+
+        public ReserveMigrationNumber ( IStorageContext storageContext, IReserveNumberService reserveNumberService ) {
+            m_storageContext = storageContext ?? throw new ArgumentNullException ( nameof ( storageContext ) );
+            m_reserveNumberService = reserveNumberService ?? throw new ArgumentNullException ( nameof ( reserveNumberService ) );
+        }
 
         [HttpPost ( "reservenumber" )]
         public Task ReserveNumber ( [FromBody, RequiredParameter] ReserveNumberModel model ) {
@@ -25,25 +30,15 @@ namespace PostgreSQL.Migrations.Pool.Controllers {
                 async () => {
                     int migrationNumber;
                     if ( model.MigrationNumber.HasValue ) {
-                        var numberItems = await m_storageContext.GetAsync<int> (
-                            new Query ( "reservednumber" )
-                                .Where ( "number", model.MigrationNumber.Value )
-                                .OrderByDesc ( "number" )
-                        );
-                        if ( numberItems.Any () ) throw new ArgumentException ( $"Number {numberItems} already reserved!" );
+                        if ( !await m_reserveNumberService.CheckNumberIsFree ( model.MigrationNumber.Value ) ) throw new ArgumentException ( $"Number {model.MigrationNumber.Value} already reserved!" );
                         migrationNumber = model.MigrationNumber.Value;
                     } else {
-                        var lastNumberItems = await m_storageContext.GetAsync<int> (
-                            new Query ( "reservednumber" )
-                                .OrderByDesc ( "number" )
-                                .Limit ( 1 )
-                                .Select ( "number" )
-                        );
-                        migrationNumber = lastNumberItems.Any () ? lastNumberItems.First () + 1 : 1;
+                        migrationNumber = await m_reserveNumberService.GetNewNumber ( model.NumberStrategy );
                     }
                     var reserverNumber = new ReservedNumber {
                         Number = migrationNumber,
                         UserId = 0,
+                        ReleaseId = model.ReleaseId,
                         Comment = model.Comment
                     };
 
