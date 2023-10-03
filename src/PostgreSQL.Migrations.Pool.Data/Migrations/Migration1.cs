@@ -10,7 +10,7 @@ namespace PostgreSQL.Migrations.Pool.Data.Migrations {
         public override string Down () {
             return """
 DROP TABLE reservednumber;
-DROP TABLE user;
+DROP TABLE pooluser;
 """;
         }
 
