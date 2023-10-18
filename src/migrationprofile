@@ -1,0 +1,2 @@
+constring Host=localhost;Port=5432;Username=postgres;Password=postgres;Database=pooldatabase
+file C:\work\Repositories\Postgres.Migrator\Repository\PostgreSQL.Migrations.Pool\src\PostgreSQL.Migrations.Pool.Data\bin\Debug\net7.0\PostgreSQL.Migrations.Pool.Data.dll
