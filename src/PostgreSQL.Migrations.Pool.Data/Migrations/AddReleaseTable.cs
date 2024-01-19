@@ -1,20 +1,22 @@
-﻿using PostgreSQL.Migrations.Client;
-using System.ComponentModel;
+﻿using System.ComponentModel;
 
 namespace PostgreSQL.Migrations.Pool.Data.Migrations {
 
-    [MigrationNumber ( 2, "https://github.com/EmptyFlow/PostgreSQL.Migrations/issues/1" )]
     [Description ( "Create table release" )]
-    public class AddReleaseTable : MigrationScript {
+    public class AddReleaseTable {
 
-        public override string Down () {
+        public static int MigrationNumber => 2;
+
+        public static string Issue => "https://github.com/EmptyFlow/PostgreSQL.Migrations/issues/1";
+
+        public string Down () {
             return """
 ALTER TABLE reservednumber DROP COLUMN releaseid;
 DROP TABLE release;
 """;
         }
 
-        public override string Up () {
+        public string Up () {
             return """
 CREATE TABLE release(
     id SERIAL PRIMARY KEY,
